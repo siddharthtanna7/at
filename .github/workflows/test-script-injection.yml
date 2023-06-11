@@ -1,0 +1,23 @@
+name: Check for script injection vulnerabilities
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-vulnerabilities:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check for script injection vulnerabilities
+        run: |
+          if grep -r -E 'run:.*\$\{\{ github\.event\..* \}\}' .github/workflows; then
+            echo "Potential script injection vulnerability found!"
+            exit 1
+          else
+            echo "No potential script injection vulnerabilities found."
+          fi
